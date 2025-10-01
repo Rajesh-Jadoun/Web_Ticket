@@ -1,4 +1,4 @@
-const webAppURL = "YOUR_GAS_WEB_APP_URL_HERE"; // Replace with your GAS URL
+const webAppURL = "https://script.google.com/macros/s/AKfycbyiH9WkCf0p8HUA4jL5-veLFqaizfjNKCgqh95mxJBYFubF6oZlXwZPoG84b7t07LkyOA/exec"; // Replace with your GAS URL
 
 // Load Tickets
 function loadTickets() {
