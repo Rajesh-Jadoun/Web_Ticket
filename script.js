@@ -1,4 +1,4 @@
-const webAppURL = "https://script.google.com/macros/s/AKfycbyiH9WkCf0p8HUA4jL5-veLFqaizfjNKCgqh95mxJBYFubF6oZlXwZPoG84b7t07LkyOA/exec"; // Replace with your GAS URL
+const webAppURL = "https://script.google.com/macros/s/AKfycbyiH9WkCf0p8HUA4jL5-veLFqaizfjNKCgqh95mxJBYFubF6oZlXwZPoG84b7t07LkyOA/exec";
 
 // Load Tickets
 function loadTickets() {
@@ -12,11 +12,11 @@ function loadTickets() {
 function renderTickets(tickets) {
   const container = document.getElementById("ticketList");
   container.innerHTML = "";
-  if(tickets.length===0){
-    container.innerHTML="<p>No active tickets 🎉</p>";
+  if(tickets.length === 0){
+    container.innerHTML = "<p>No active tickets 🎉</p>";
     return;
   }
-  tickets.forEach(ticket=>{
+  tickets.forEach(ticket => {
     const div = document.createElement("div");
     div.className = "ticket";
     div.innerHTML = `
@@ -35,28 +35,27 @@ document.getElementById("ticketForm").addEventListener("submit", function(e){
 
   fetch(webAppURL, {
     method: "POST",
+    mode: "no-cors", // status check nahi chahiye
     body: JSON.stringify({action:"add", name, issue}),
     headers: { "Content-Type": "application/json" }
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert("Ticket Raised!");
-    document.getElementById("ticketForm").reset();
-    loadTickets();
   });
+
+  alert("Ticket Raised!");
+  document.getElementById("ticketForm").reset();
+  loadTickets();
 });
 
 // Resolve Ticket
 function resolveTicket(id){
   fetch(webAppURL, {
     method: "POST",
-      mode: "no-cors",
+    mode: "no-cors",
     body: JSON.stringify({action:"resolve", id}),
     headers: { "Content-Type": "application/json" }
-  })
-    alert("Ticket Resolved!");
-    loadTickets();
   });
+
+  alert("Ticket Resolved!");
+  loadTickets();
 }
 
 // Initial load
