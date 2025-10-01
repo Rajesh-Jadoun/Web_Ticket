@@ -19,7 +19,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       background: white;
       padding: 30px;
@@ -51,25 +51,95 @@
     }
 
     form {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 12px;
-      flex-wrap: wrap;
     }
 
-    form input {
-      flex: 1;
-      min-width: 200px;
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      color: white;
+      font-size: 0.85em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    form input, form select, form textarea {
       padding: 12px 16px;
       border: none;
       border-radius: 8px;
       font-size: 15px;
       background: white;
       transition: all 0.3s ease;
+      font-family: inherit;
     }
 
-    form input:focus {
+    form textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    form input:focus, form select:focus, form textarea:focus {
       outline: none;
       box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 15px;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .file-input-label:hover {
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+    }
+
+    .file-name {
+      color: white;
+      font-size: 0.85em;
+      margin-top: 5px;
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 5px;
+      display: none;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .button-group {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
     }
 
     form button {
@@ -165,16 +235,16 @@
     }
 
     th {
-      padding: 15px;
+      padding: 15px 10px;
       text-align: left;
       font-weight: 600;
-      font-size: 0.9em;
+      font-size: 0.85em;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     td {
-      padding: 15px;
+      padding: 15px 10px;
       border-bottom: 1px solid #ecf0f1;
     }
 
@@ -199,11 +269,30 @@
 
     .ticket-issue {
       color: #555;
-      max-width: 400px;
+      max-width: 300px;
     }
 
     .ticket-time {
       color: #7f8c8d;
+      font-size: 0.85em;
+    }
+
+    .attachment-link {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85em;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .attachment-link:hover {
+      text-decoration: underline;
+    }
+
+    .no-attachment {
+      color: #95a5a6;
       font-size: 0.85em;
     }
 
@@ -246,36 +335,6 @@
       font-size: 0.95em;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-      }
-
-      h1 {
-        font-size: 1.6em;
-      }
-
-      form {
-        flex-direction: column;
-      }
-
-      form input {
-        min-width: 100%;
-      }
-
-      .stats {
-        flex-direction: column;
-      }
-
-      table {
-        font-size: 0.85em;
-      }
-
-      th, td {
-        padding: 10px 8px;
-      }
-    }
-
     .loading {
       text-align: center;
       padding: 40px;
@@ -305,6 +364,32 @@
         opacity: 1;
       }
     }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.6em;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        flex-direction: column;
+      }
+
+      table {
+        font-size: 0.8em;
+      }
+
+      th, td {
+        padding: 10px 5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -314,9 +399,35 @@
 
     <div class="form-card">
       <form id="ticketForm">
-        <input type="text" id="username" placeholder="Your Name" required>
-        <input type="text" id="issue" placeholder="Describe your issue" required>
-        <button type="submit">🚀 Raise Ticket</button>
+        <div class="form-group">
+          <label>Raised By *</label>
+          <input type="text" id="raisedBy" placeholder="Aapka Naam" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Kis Ke Liye Ticket Hai? *</label>
+          <input type="text" id="raisedFor" placeholder="Us Vyakti Ka Naam" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Issue Description *</label>
+          <textarea id="issue" placeholder="Apni samasya vistar se batayein..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Attach File (Optional)</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="fileAttachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
+            <label for="fileAttachment" class="file-input-label">
+              📎 File Chunein
+            </label>
+          </div>
+          <div id="fileName" class="file-name"></div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit">🚀 Ticket Raise Karein</button>
+        </div>
       </form>
     </div>
 
@@ -346,7 +457,6 @@
   <script>
     const webAppURL = "https://script.google.com/macros/s/AKfycbyiH9WkCf0p8HUA4jL5-veLFqaizfjNKCgqh95mxJBYFubF6oZlXwZPoG84b7t07LkyOA/exec";
 
-    // Show Toast Notification
     function showToast(message, type = 'success') {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -360,7 +470,26 @@
       }, 3000);
     }
 
-    // Format timestamp
+    document.getElementById('fileAttachment').addEventListener('change', function(e) {
+      const fileName = e.target.files[0]?.name;
+      const fileNameDiv = document.getElementById('fileName');
+      if (fileName) {
+        fileNameDiv.textContent = '✓ ' + fileName;
+        fileNameDiv.style.display = 'block';
+      } else {
+        fileNameDiv.style.display = 'none';
+      }
+    });
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
     function formatTime(timestamp) {
       if (!timestamp) {
         const now = new Date();
@@ -384,12 +513,11 @@
       });
     }
 
-    // Load Tickets
     function loadTickets() {
       fetch(webAppURL)
         .then(res => res.json())
         .then(data => {
-          renderTickets(data);
+          renderTickets(data.tickets);
           updateStats(data);
         })
         .catch(err => {
@@ -404,16 +532,13 @@
         });
     }
 
-    // Update Stats
-    function updateStats(tickets) {
-      document.getElementById('activeCount').textContent = tickets.length;
-      document.getElementById('totalCount').textContent = tickets.length;
+    function updateStats(data) {
+      document.getElementById('activeCount').textContent = data.activeCount;
+      document.getElementById('totalCount').textContent = data.totalCount;
     }
 
-    // Render Tickets in Table
     function renderTickets(tickets) {
       const container = document.getElementById("ticketList");
-      
       if (tickets.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
@@ -429,23 +554,30 @@
         <table>
           <thead>
             <tr>
-              <th>Ticket ID</th>
-              <th>Name</th>
-              <th>Issue Description</th>
+              <th>ID</th>
+              <th>Raised By</th>
+              <th>Kis Ke Liye</th>
+              <th>Issue</th>
+              <th>Attachment</th>
               <th>Raised At</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
       `;
-
       tickets.forEach(ticket => {
+        const attachmentHTML = ticket.attachmentUrl 
+          ? `<a href="${ticket.attachmentUrl}" target="_blank" class="attachment-link">📄 File Dekhein</a>`
+          : `<span class="no-attachment">No file</span>`;
+
         tableHTML += `
           <tr>
             <td class="ticket-id">#${ticket.id}</td>
-            <td class="ticket-name">${ticket.name}</td>
+            <td class="ticket-name">${ticket.raisedBy}</td>
+            <td class="ticket-name">${ticket.raisedFor}</td>
             <td class="ticket-issue">${ticket.issue}</td>
-            <td class="ticket-time">${formatTime(ticket.timestamp)}</td>
+            <td>${attachmentHTML}</td>
+            <td class="ticket-time">${formatTime(ticket.date)}</td>
             <td>
               <button class="resolve-btn" onclick="resolveTicket(${ticket.id})">
                 ✓ Resolve
@@ -454,63 +586,88 @@
           </tr>
         `;
       });
-
       tableHTML += `
           </tbody>
         </table>
       `;
-
       container.innerHTML = tableHTML;
     }
 
-    // Submit Form
-    document.getElementById("ticketForm").addEventListener("submit", function(e) {
+    document.getElementById("ticketForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-      const name = document.getElementById("username").value;
+      
+      const raisedBy = document.getElementById("raisedBy").value;
+      const raisedFor = document.getElementById("raisedFor").value; // Badlaav yahan hai
       const issue = document.getElementById("issue").value;
-
+      const fileInput = document.getElementById("fileAttachment");
+      
+      let attachment = null;
+      let fileName = null;
+      
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName = file.name;
+        try {
+          attachment = await fileToBase64(file);
+        } catch (error) {
+          showToast("File upload nahi ho saki!", "error");
+          return;
+        }
+      }
+      
       const ticketData = {
         action: "add",
-        name: name,
+        raisedBy: raisedBy,
+        raisedFor: raisedFor, // Badlaav yahan hai
         issue: issue,
+        attachment: attachment,
+        fileName: fileName,
         timestamp: new Date().toISOString()
       };
 
       fetch(webAppURL, {
         method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify(ticketData),
-        headers: { "Content-Type": "application/json" }
+        body: JSON.stringify(ticketData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          showToast("✓ Ticket safaltapoorvak raise ho gaya!");
+          document.getElementById("ticketForm").reset();
+          document.getElementById('fileName').style.display = 'none';
+          setTimeout(loadTickets, 500);
+        } else {
+          showToast("Ticket raise nahi ho saka.", "error");
+        }
+      })
+      .catch(err => {
+        showToast("Ek error aa gayi hai.", "error");
+        console.error(err);
       });
-
-      showToast("✓ Ticket raised successfully!");
-      document.getElementById("ticketForm").reset();
-      
-      setTimeout(() => {
-        loadTickets();
-      }, 1000);
     });
 
-    // Resolve Ticket
     function resolveTicket(id) {
       fetch(webAppURL, {
         method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({action: "resolve", id: id}),
-        headers: { "Content-Type": "application/json" }
+        mode no-cors
+        body: JSON.stringify({action: "resolve", id: id})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === 'resolved') {
+          showToast("✓ Ticket resolve ho gaya hai!");
+          setTimeout(loadTickets, 500);
+        } else {
+          showToast("Ticket resolve nahi ho saka.", "error");
+        }
+      })
+      .catch(err => {
+        showToast("Ek error aa gayi hai.", "error");
+        console.error(err);
       });
-
-      showToast("✓ Ticket resolved successfully!");
-      
-      setTimeout(() => {
-        loadTickets();
-      }, 1000);
     }
 
-    // Initial load
     loadTickets();
-
-    // Auto-refresh every 30 seconds
     setInterval(loadTickets, 30000);
   </script>
 </body>
