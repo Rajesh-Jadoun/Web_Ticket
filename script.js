@@ -54,8 +54,6 @@ function resolveTicket(id){
     body: JSON.stringify({action:"resolve", id}),
     headers: { "Content-Type": "application/json" }
   })
-  .then(res => res.json())
-  .then(data => {
     alert("Ticket Resolved!");
     loadTickets();
   });
