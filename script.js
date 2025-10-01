@@ -50,6 +50,7 @@ document.getElementById("ticketForm").addEventListener("submit", function(e){
 function resolveTicket(id){
   fetch(webAppURL, {
     method: "POST",
+      mode: "no-cors",
     body: JSON.stringify({action:"resolve", id}),
     headers: { "Content-Type": "application/json" }
   })
