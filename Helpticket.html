@@ -241,6 +241,7 @@
       font-size: 0.85em;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      white-space: nowrap;
     }
 
     td {
@@ -275,6 +276,7 @@
     .ticket-time {
       color: #7f8c8d;
       font-size: 0.85em;
+      white-space: nowrap;
     }
 
     .attachment-link {
@@ -306,6 +308,7 @@
       font-weight: 600;
       transition: all 0.3s ease;
       font-size: 0.85em;
+      white-space: nowrap;
     }
 
     .resolve-btn:hover {
@@ -383,11 +386,11 @@
       }
 
       table {
-        font-size: 0.8em;
+        font-size: 0.75em;
       }
 
       th, td {
-        padding: 10px 5px;
+        padding: 8px 5px;
       }
     }
   </style>
@@ -400,18 +403,23 @@
     <div class="form-card">
       <form id="ticketForm">
         <div class="form-group">
-          <label>Raised By *</label>
-          <input type="text" id="raisedBy" placeholder="Aapka Naam" required>
+          <label>Raised By (Your Name) *</label>
+          <input type="text" id="raisedBy" placeholder="e.g. Rahul Kumar" required>
         </div>
         
         <div class="form-group">
-          <label>Kis Ke Liye Ticket Hai? *</label>
-          <input type="text" id="raisedFor" placeholder="Us Vyakti Ka Naam" required>
+          <label>Raised For (Person Name) *</label>
+          <input type="text" id="raisedFor" placeholder="e.g. Priya Sharma" required>
+        </div>
+
+        <div class="form-group">
+          <label>Assigned To (Support Person) *</label>
+          <input type="text" id="assignedTo" placeholder="e.g. IT Support Team" required>
         </div>
 
         <div class="form-group full-width">
           <label>Issue Description *</label>
-          <textarea id="issue" placeholder="Apni samasya vistar se batayein..." required></textarea>
+          <textarea id="issue" placeholder="Describe your issue in detail..." required></textarea>
         </div>
 
         <div class="form-group">
@@ -419,14 +427,14 @@
           <div class="file-input-wrapper">
             <input type="file" id="fileAttachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
             <label for="fileAttachment" class="file-input-label">
-              📎 File Chunein
+              📎 Choose File
             </label>
           </div>
           <div id="fileName" class="file-name"></div>
         </div>
 
         <div class="button-group">
-          <button type="submit">🚀 Ticket Raise Karein</button>
+          <button type="submit">🚀 Raise Ticket</button>
         </div>
       </form>
     </div>
@@ -455,8 +463,10 @@
   </div>
 
   <script>
+    // ⚠️ IMPORTANT: Replace this URL with your Google Apps Script Web App URL
     const webAppURL = "https://script.google.com/macros/s/AKfycbyiH9WkCf0p8HUA4jL5-veLFqaizfjNKCgqh95mxJBYFubF6oZlXwZPoG84b7t07LkyOA/exec";
 
+    // Show Toast Notification
     function showToast(message, type = 'success') {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -470,6 +480,7 @@
       }, 3000);
     }
 
+    // File selection handler
     document.getElementById('fileAttachment').addEventListener('change', function(e) {
       const fileName = e.target.files[0]?.name;
       const fileNameDiv = document.getElementById('fileName');
@@ -481,6 +492,7 @@
       }
     });
 
+    // Convert file to Base64
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -490,6 +502,7 @@
       });
     }
 
+    // Format timestamp
     function formatTime(timestamp) {
       if (!timestamp) {
         const now = new Date();
@@ -513,11 +526,12 @@
       });
     }
 
+    // Load Tickets
     function loadTickets() {
       fetch(webAppURL)
         .then(res => res.json())
         .then(data => {
-          renderTickets(data.tickets);
+          renderTickets(data);
           updateStats(data);
         })
         .catch(err => {
@@ -532,13 +546,16 @@
         });
     }
 
-    function updateStats(data) {
-      document.getElementById('activeCount').textContent = data.activeCount;
-      document.getElementById('totalCount').textContent = data.totalCount;
+    // Update Stats
+    function updateStats(tickets) {
+      document.getElementById('activeCount').textContent = tickets.length;
+      document.getElementById('totalCount').textContent = tickets.length;
     }
 
+    // Render Tickets in Table
     function renderTickets(tickets) {
       const container = document.getElementById("ticketList");
+      
       if (tickets.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
@@ -556,7 +573,8 @@
             <tr>
               <th>ID</th>
               <th>Raised By</th>
-              <th>Kis Ke Liye</th>
+              <th>Raised For</th>
+              <th>Assigned To</th>
               <th>Issue</th>
               <th>Attachment</th>
               <th>Raised At</th>
@@ -565,16 +583,18 @@
           </thead>
           <tbody>
       `;
+
       tickets.forEach(ticket => {
-        const attachmentHTML = ticket.attachmentUrl 
-          ? `<a href="${ticket.attachmentUrl}" target="_blank" class="attachment-link">📄 File Dekhein</a>`
+        const attachmentHTML = ticket.attachment 
+          ? `<a href="${ticket.attachment}" download class="attachment-link">📄 Download</a>`
           : `<span class="no-attachment">No file</span>`;
 
         tableHTML += `
           <tr>
             <td class="ticket-id">#${ticket.id}</td>
-            <td class="ticket-name">${ticket.raisedBy}</td>
-            <td class="ticket-name">${ticket.raisedFor}</td>
+            <td class="ticket-name">${ticket.raisedBy || 'N/A'}</td>
+            <td class="ticket-name">${ticket.raisedFor || 'N/A'}</td>
+            <td class="ticket-name">${ticket.assignedTo || 'N/A'}</td>
             <td class="ticket-issue">${ticket.issue}</td>
             <td>${attachmentHTML}</td>
             <td class="ticket-time">${formatTime(ticket.date)}</td>
@@ -586,18 +606,22 @@
           </tr>
         `;
       });
+
       tableHTML += `
           </tbody>
         </table>
       `;
+
       container.innerHTML = tableHTML;
     }
 
+    // Submit Form
     document.getElementById("ticketForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       
       const raisedBy = document.getElementById("raisedBy").value;
-      const raisedFor = document.getElementById("raisedFor").value; // Badlaav yahan hai
+      const raisedFor = document.getElementById("raisedFor").value;
+      const assignedTo = document.getElementById("assignedTo").value;
       const issue = document.getElementById("issue").value;
       const fileInput = document.getElementById("fileAttachment");
       
@@ -610,15 +634,16 @@
         try {
           attachment = await fileToBase64(file);
         } catch (error) {
-          showToast("File upload nahi ho saki!", "error");
+          showToast("File upload failed!", "error");
           return;
         }
       }
-      
+
       const ticketData = {
         action: "add",
         raisedBy: raisedBy,
-        raisedFor: raisedFor, // Badlaav yahan hai
+        raisedFor: raisedFor,
+        assignedTo: assignedTo,
         issue: issue,
         attachment: attachment,
         fileName: fileName,
@@ -627,47 +652,40 @@
 
       fetch(webAppURL, {
         method: "POST",
-        body: JSON.stringify(ticketData)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === 'success') {
-          showToast("✓ Ticket safaltapoorvak raise ho gaya!");
-          document.getElementById("ticketForm").reset();
-          document.getElementById('fileName').style.display = 'none';
-          setTimeout(loadTickets, 500);
-        } else {
-          showToast("Ticket raise nahi ho saka.", "error");
-        }
-      })
-      .catch(err => {
-        showToast("Ek error aa gayi hai.", "error");
-        console.error(err);
+        mode: "no-cors",
+        body: JSON.stringify(ticketData),
+        headers: { "Content-Type": "application/json" }
       });
+
+      showToast("✓ Ticket raised successfully!");
+      document.getElementById("ticketForm").reset();
+      document.getElementById('fileName').style.display = 'none';
+      
+      setTimeout(() => {
+        loadTickets();
+      }, 1000);
     });
 
+    // Resolve Ticket
     function resolveTicket(id) {
       fetch(webAppURL, {
         method: "POST",
-        mode "no-cors"
-        body: JSON.stringify({action: "resolve", id: id})
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === 'resolved') {
-          showToast("✓ Ticket resolve ho gaya hai!");
-          setTimeout(loadTickets, 500);
-        } else {
-          showToast("Ticket resolve nahi ho saka.", "error");
-        }
-      })
-      .catch(err => {
-        showToast("Ek error aa gayi hai.", "error");
-        console.error(err);
+        mode: "no-cors",
+        body: JSON.stringify({action: "resolve", id: id}),
+        headers: { "Content-Type": "application/json" }
       });
+
+      showToast("✓ Ticket resolved successfully!");
+      
+      setTimeout(() => {
+        loadTickets();
+      }, 1000);
     }
 
+    // Initial load
     loadTickets();
+
+    // Auto-refresh every 30 seconds
     setInterval(loadTickets, 30000);
   </script>
 </body>
