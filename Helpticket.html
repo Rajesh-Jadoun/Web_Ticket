@@ -244,10 +244,20 @@
       white-space: nowrap;
     }
 
-    td {
-      padding: 15px 10px;
-      border-bottom: 1px solid #ecf0f1;
-    }
+      table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+table, th, td {
+  border: 1px solid #000;   /* Excel जैसी ग्रे लाइन्स */
+}
+
+th, td {
+  padding: 12px 10px;
+  text-align: left;
+}
 
     tbody tr {
       transition: all 0.2s ease;
@@ -268,10 +278,13 @@
       color: #2c3e50;
     }
 
-    .ticket-issue {
+        .ticket-issue {
       color: #555;
-      max-width: 300px;
+      max-width: 300px;   
+      white-space: normal; 
+      word-wrap: break-word; 
     }
+
 
     .ticket-time {
       color: #7f8c8d;
@@ -279,18 +292,25 @@
       white-space: nowrap;
     }
 
-    .attachment-link {
-      color: #3498db;
-      text-decoration: none;
+    .view-btn {
+      background: #3498db;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
       font-weight: 600;
+      transition: all 0.3s ease;
       font-size: 0.85em;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      text-decoration: none;
+      display: inline-block;
+      white-space: nowrap;
     }
 
-    .attachment-link:hover {
-      text-decoration: underline;
+    .view-btn:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
     }
 
     .no-attachment {
@@ -425,7 +445,7 @@
         <div class="form-group">
           <label>Attach File (Optional)</label>
           <div class="file-input-wrapper">
-            <input type="file" id="fileAttachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
+            <input type="file" id="fileAttachment" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt,.xls,.xlsx">
             <label for="fileAttachment" class="file-input-label">
               📎 Choose File
             </label>
@@ -464,7 +484,7 @@
 
   <script>
     // ⚠️ IMPORTANT: Replace this URL with your Google Apps Script Web App URL
-    const webAppURL = "https://script.google.com/macros/s/AKfycbyiH9WkCf0p8HUA4jL5-veLFqaizfjNKCgqh95mxJBYFubF6oZlXwZPoG84b7t07LkyOA/exec";
+    const webAppURL = "https://script.google.com/macros/s/AKfycbztDDlIOxhQDbLc1X0ICL9XagWBvgb6Ozv-XbRAHiyrTBBTS8Hiua7p-wuqsNiWFbet/exec";
 
     // Show Toast Notification
     function showToast(message, type = 'success') {
@@ -585,8 +605,8 @@
       `;
 
       tickets.forEach(ticket => {
-        const attachmentHTML = ticket.attachment 
-          ? `<a href="${ticket.attachment}" download class="attachment-link">📄 Download</a>`
+        const attachmentHTML = ticket.attachmentUrl 
+          ? `<a href="${ticket.attachmentUrl}" target="_blank" class="view-btn">👁️ View</a>`
           : `<span class="no-attachment">No file</span>`;
 
         tableHTML += `
@@ -663,7 +683,7 @@
       
       setTimeout(() => {
         loadTickets();
-      }, 1000);
+      }, 1500);
     });
 
     // Resolve Ticket
@@ -679,14 +699,14 @@
       
       setTimeout(() => {
         loadTickets();
-      }, 1000);
+      }, 1500);
     }
 
     // Initial load
     loadTickets();
 
     // Auto-refresh every 30 seconds
-    setInterval(loadTickets, 30000);
+    setInterval(loadTickets, 3000);
   </script>
 </body>
 </html>
